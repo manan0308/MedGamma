@@ -40,3 +40,10 @@ backend/uploads/*
 
 # Samples (add your own)
 samples/*.dcm
+
+# Local datasets
+datasets/GliODIL/*
+!datasets/GliODIL/longitudinal_manifest.csv
+!datasets/GliODIL/longitudinal_manifest.md
+!datasets/GliODIL/showcase/
+!datasets/GliODIL/showcase/*.png

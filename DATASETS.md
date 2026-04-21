@@ -32,6 +32,11 @@ This project can be showcased with a mix of lightweight open datasets and larger
   - DICOM brain cancer MRI detection/segmentation style dataset with reports.
   - Good for richer tumor examples, but the public sample appears limited.
 
+- `xenificity/TumorMRI`
+  - Link: https://huggingface.co/datasets/xenificity/TumorMRI
+  - BIDS-compliant pre-operative structural and resting-state MRI data from glioma, meningioma, and healthy control subjects.
+  - Good small tumor-focused research dataset for a polished MRI showcase.
+
 - `Ehsan-rmz/lgg-mri-segmentation-research`
   - Link: https://huggingface.co/datasets/Ehsan-rmz/lgg-mri-segmentation-research
   - Patient-centric lower-grade glioma MRI segmentation dataset.

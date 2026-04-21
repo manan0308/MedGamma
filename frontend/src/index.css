@@ -1,0 +1,254 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------- Design tokens ---------- */
+:root {
+  /* Warm-neutral paper aesthetic */
+  --paper: oklch(0.985 0.004 85);
+  --panel: oklch(1 0 0);
+  --sunken: oklch(0.965 0.005 85);
+  --ink: oklch(0.20 0.006 260);
+  --muted: oklch(0.48 0.008 260);
+  --faint: oklch(0.68 0.008 260);
+  --line: oklch(0.92 0.004 80);
+  --line-strong: oklch(0.86 0.005 80);
+
+  /* Accent — calm clinical blue by default */
+  --accent-h: 230;
+  --accent: oklch(0.55 0.12 var(--accent-h));
+  --accent-soft: oklch(0.96 0.025 var(--accent-h));
+  --accent-ink: oklch(0.30 0.08 var(--accent-h));
+
+  --danger: oklch(0.55 0.14 25);
+  --ok: oklch(0.60 0.12 150);
+
+  /* Density */
+  --row: 36px;
+  --pad-x: 16px;
+  --pad-y: 12px;
+  --gap: 16px;
+
+  /* Serif display sizing that stays calm */
+  --display-line: 1.05;
+}
+
+.density-compact {
+  --row: 28px;
+  --pad-x: 12px;
+  --pad-y: 8px;
+  --gap: 10px;
+}
+
+/* Dark mode */
+.dark {
+  --paper: oklch(0.17 0.006 260);
+  --panel: oklch(0.20 0.007 260);
+  --sunken: oklch(0.15 0.006 260);
+  --ink: oklch(0.96 0.004 85);
+  --muted: oklch(0.68 0.008 260);
+  --faint: oklch(0.52 0.008 260);
+  --line: oklch(0.28 0.008 260);
+  --line-strong: oklch(0.36 0.01 260);
+
+  --accent: oklch(0.72 0.14 var(--accent-h));
+  --accent-soft: oklch(0.28 0.06 var(--accent-h));
+  --accent-ink: oklch(0.92 0.06 var(--accent-h));
+}
+
+/* ---------- Base ---------- */
+* { border-color: var(--line); }
+
+html, body, #root { height: 100%; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-feature-settings: 'ss01', 'cv11', 'cv09';
+  background: var(--paper);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection { background: var(--accent-soft); color: var(--accent-ink); }
+
+/* ---------- Typography primitives ---------- */
+.font-display { font-family: var(--display-font, 'Instrument Serif', Georgia, serif); font-weight: 400; letter-spacing: -0.01em; }
+.font-mono { font-family: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, monospace; }
+
+.eyebrow {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 10px;
+  line-height: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+  font-weight: 500;
+}
+
+.kbd {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 18px; height: 18px; padding: 0 4px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 10px; color: var(--muted);
+  background: var(--sunken);
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+}
+
+/* ---------- Reusable primitives ---------- */
+.surface { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
+.surface-sunken { background: var(--sunken); border: 1px solid var(--line); border-radius: 8px; }
+.hairline { border-bottom: 1px solid var(--line); }
+.hairline-t { border-top: 1px solid var(--line); }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: var(--row); padding: 0 12px;
+  font-size: 12.5px; font-weight: 500; color: var(--ink);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  transition: background .12s ease, border-color .12s ease, color .12s ease;
+}
+.btn:hover { background: var(--sunken); border-color: var(--line-strong); }
+.btn:active { transform: translateY(0.5px); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-primary {
+  color: white;
+  background: var(--accent);
+  border-color: transparent;
+}
+.btn-primary:hover { background: oklch(from var(--accent) calc(l - 0.04) c h); }
+.dark .btn-primary { color: oklch(0.12 0.01 260); }
+
+.btn-ghost { background: transparent; border-color: transparent; color: var(--muted); }
+.btn-ghost:hover { background: var(--sunken); color: var(--ink); }
+
+.btn-xs { height: 24px; padding: 0 8px; font-size: 11px; }
+.btn-sm { height: 28px; padding: 0 10px; font-size: 12px; }
+
+.input {
+  width: 100%;
+  height: var(--row);
+  padding: 0 10px;
+  font-size: 13px; color: var(--ink);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  outline: none;
+  transition: border-color .12s ease, box-shadow .12s ease;
+}
+.input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+textarea.input { height: auto; padding: 8px 10px; resize: vertical; min-height: 72px; }
+
+.chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  height: 22px; padding: 0 8px;
+  font-size: 11px; color: var(--muted);
+  background: var(--sunken);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+.chip-active {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  border-color: color-mix(in oklab, var(--accent) 30%, transparent);
+}
+
+.divider-dotted {
+  background-image: linear-gradient(to right, var(--line) 50%, transparent 50%);
+  background-size: 6px 1px;
+  background-repeat: repeat-x;
+  height: 1px;
+}
+
+/* Radiology film look for image viewer */
+.film {
+  background:
+    radial-gradient(ellipse at center, oklch(0.20 0.006 260) 0%, oklch(0.08 0.004 260) 72%, oklch(0.04 0.002 260) 100%);
+}
+
+.dot-grid {
+  background-image: radial-gradient(circle at 1px 1px, var(--line-strong) 0.8px, transparent 0);
+  background-size: 14px 14px;
+}
+
+.stripes-placeholder {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    oklch(0.92 0.005 80) 0 10px,
+    oklch(0.95 0.004 80) 10px 20px
+  );
+}
+.dark .stripes-placeholder {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    oklch(0.22 0.008 260) 0 10px,
+    oklch(0.25 0.008 260) 10px 20px
+  );
+}
+
+/* Cold-start shimmer */
+.skel {
+  background: linear-gradient(
+    90deg,
+    var(--sunken) 0%,
+    color-mix(in oklab, var(--sunken) 70%, var(--panel)) 50%,
+    var(--sunken) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+  border-radius: 6px;
+}
+
+/* Focus ring */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Scrollbar — slim */
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 4px; }
+*::-webkit-scrollbar-track { background: transparent; }
+
+/* Markdown / report typography */
+.report h3, .report h4 {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--faint);
+  margin: 20px 0 8px;
+}
+.report h3:first-child, .report h4:first-child { margin-top: 0; }
+.report p { margin: 0 0 10px; }
+.report ul { margin: 0 0 10px; padding-left: 16px; }
+.report ul li { margin-bottom: 4px; list-style: disc; }
+.report strong { color: var(--ink); font-weight: 600; }
+.report em { color: var(--accent-ink); font-style: normal; background: var(--accent-soft); padding: 0 3px; border-radius: 3px; }
+
+/* --- animation keyframes already in tailwind config --- */
+
+/* Spinner */
+.spin {
+  width: 12px; height: 12px;
+  border: 1.5px solid var(--line-strong);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Small utility classes */
+.grow-1 { flex-grow: 1; }
+.truncate-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

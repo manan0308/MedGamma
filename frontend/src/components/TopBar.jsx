@@ -1,0 +1,106 @@
+import React from 'react';
+import { Icon } from './Icon';
+import { useStore } from '../store/useStore';
+
+export default function TopBar() {
+  const {
+    tweaks,
+    setTweak,
+    setTweaksOpen,
+    tweaksOpen,
+    comparisonMode,
+    setComparisonMode,
+    activePane,
+    setActivePane,
+    files,
+  } = useStore();
+
+  return (
+    <header className="h-14 surface border-0 border-b border-line flex items-center px-4 gap-3 shrink-0" style={{ borderRadius: 0 }}>
+      {/* Brand */}
+      <div className="flex items-center gap-2">
+        <div
+          className="w-7 h-7 rounded-md flex items-center justify-center text-accent"
+          style={{ background: 'var(--accent-soft)' }}
+        >
+          <Icon name="logo" size={16} />
+        </div>
+        <div className="leading-none">
+          <div className="font-display text-lg">MedGamma</div>
+          <div className="eyebrow -mt-px">Radiology intelligence · v1.0</div>
+        </div>
+      </div>
+
+      {/* Pane switcher */}
+      <nav className="ml-6 flex items-center gap-1">
+        {[
+          { id: 'workspace', label: 'Workspace', icon: 'image' },
+          { id: 'compare', label: 'Compare', icon: 'compare' },
+          { id: 'history', label: 'History', icon: 'history' },
+          { id: 'export', label: 'Export', icon: 'download' },
+        ].map((p) => (
+          <button
+            key={p.id}
+            onClick={() => {
+              setActivePane(p.id);
+              if (p.id === 'compare' && !comparisonMode) setComparisonMode(true);
+              if (p.id !== 'compare' && comparisonMode) setComparisonMode(false);
+            }}
+            className={`btn btn-sm ${activePane === p.id ? 'chip-active' : 'btn-ghost'}`}
+            style={activePane === p.id ? { background: 'var(--accent-soft)', color: 'var(--accent-ink)', borderColor: 'transparent' } : {}}
+          >
+            <Icon name={p.icon} size={13} />
+            {p.label}
+          </button>
+        ))}
+      </nav>
+
+      <div className="grow-1" />
+
+      {/* Status */}
+      <div className="flex items-center gap-2 pr-2">
+        <span
+          className="w-1.5 h-1.5 rounded-full"
+          style={{ background: 'var(--ok)' }}
+        />
+        <span className="eyebrow">MedGemma 1.5 · A10G · warm</span>
+      </div>
+
+      {/* View toggle */}
+      <div className="surface-sunken flex items-center p-0.5 rounded-md">
+        {['clinician', 'patient'].map((v) => (
+          <button
+            key={v}
+            onClick={() => setTweak('view', v)}
+            className="px-2.5 h-6 text-xs rounded-sm capitalize"
+            style={{
+              background: tweaks.view === v ? 'var(--panel)' : 'transparent',
+              color: tweaks.view === v ? 'var(--ink)' : 'var(--muted)',
+              boxShadow: tweaks.view === v ? 'inset 0 0 0 1px var(--line)' : 'none',
+            }}
+          >
+            {v}
+          </button>
+        ))}
+      </div>
+
+      {/* Dark/light */}
+      <button
+        className="btn btn-ghost btn-sm"
+        onClick={() => setTweak('theme', tweaks.theme === 'dark' ? 'light' : 'dark')}
+        aria-label="Toggle theme"
+      >
+        <Icon name={tweaks.theme === 'dark' ? 'sun' : 'moon'} size={13} />
+      </button>
+
+      {/* Tweaks */}
+      <button
+        className="btn btn-sm"
+        onClick={() => setTweaksOpen(!tweaksOpen)}
+      >
+        <Icon name="settings" size={13} />
+        Tweaks
+      </button>
+    </header>
+  );
+}

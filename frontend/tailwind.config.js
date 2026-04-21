@@ -1,0 +1,70 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  darkMode: ['class'],
+  theme: {
+    extend: {
+      colors: {
+        paper: 'var(--paper)',
+        panel: 'var(--panel)',
+        sunken: 'var(--sunken)',
+        ink: 'var(--ink)',
+        muted: 'var(--muted)',
+        faint: 'var(--faint)',
+        line: 'var(--line)',
+        lineStrong: 'var(--line-strong)',
+        accent: {
+          DEFAULT: 'var(--accent)',
+          soft: 'var(--accent-soft)',
+          ink: 'var(--accent-ink)',
+        },
+        danger: 'var(--danger)',
+        ok: 'var(--ok)',
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['"Instrument Serif"', 'Georgia', 'serif'],
+        mono: ['"JetBrains Mono"', '"IBM Plex Mono"', 'ui-monospace', 'monospace'],
+      },
+      fontSize: {
+        '2xs': ['10px', { lineHeight: '14px', letterSpacing: '0.04em' }],
+        'xs': ['11px', { lineHeight: '16px' }],
+        'sm': ['12.5px', { lineHeight: '18px' }],
+        'base': ['14px', { lineHeight: '20px' }],
+        'md': ['15px', { lineHeight: '22px' }],
+        'lg': ['17px', { lineHeight: '24px' }],
+        'xl': ['20px', { lineHeight: '28px' }],
+        '2xl': ['26px', { lineHeight: '32px' }],
+        '3xl': ['34px', { lineHeight: '40px' }],
+        '4xl': ['44px', { lineHeight: '48px' }],
+        '5xl': ['60px', { lineHeight: '64px' }],
+      },
+      borderRadius: {
+        xs: '3px',
+        sm: '4px',
+        DEFAULT: '6px',
+        md: '8px',
+        lg: '10px',
+        xl: '14px',
+      },
+      boxShadow: {
+        hairline: 'inset 0 0 0 1px var(--line)',
+        soft: '0 1px 0 var(--line), 0 1px 2px rgba(14,18,26,0.03)',
+        lift: '0 6px 22px -12px rgba(14,18,26,0.18), 0 1px 0 var(--line)',
+      },
+      animation: {
+        'fade-in': 'fadeIn .18s ease-out',
+        'slide-up': 'slideUp .22s ease-out',
+        'pulse-soft': 'pulseSoft 2.4s ease-in-out infinite',
+        shimmer: 'shimmer 1.6s linear infinite',
+      },
+      keyframes: {
+        fadeIn: { '0%': { opacity: 0 }, '100%': { opacity: 1 } },
+        slideUp: { '0%': { opacity: 0, transform: 'translateY(6px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } },
+        pulseSoft: { '0%,100%': { opacity: 0.5 }, '50%': { opacity: 1 } },
+        shimmer: { '0%': { backgroundPosition: '-200% 0' }, '100%': { backgroundPosition: '200% 0' } },
+      },
+    },
+  },
+  plugins: [],
+};

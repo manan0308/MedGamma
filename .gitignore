@@ -47,3 +47,4 @@ datasets/GliODIL/*
 !datasets/GliODIL/longitudinal_manifest.md
 !datasets/GliODIL/showcase/
 !datasets/GliODIL/showcase/*.png
+datasets/hf_downloads/

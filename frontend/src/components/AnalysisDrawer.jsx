@@ -68,11 +68,14 @@ export default function AnalysisDrawer() {
       // If the file is a sample (no raw File), populate a canned result for demo.
       if (!file.file) {
         await new Promise((r) => setTimeout(r, 1800));
-        setResult(file.id, {
-          technical: SAMPLE_REPORT_TECHNICAL,
-          simple: SAMPLE_REPORT_SIMPLE,
-          heatmap: 'demo',
-        });
+        setResult(
+          file.id,
+          file.resultTemplate || {
+            technical: SAMPLE_REPORT_TECHNICAL,
+            simple: SAMPLE_REPORT_SIMPLE,
+            heatmap: 'demo',
+          }
+        );
       } else {
         const r = await analyzeWithModal(file.file, {
           mode: 'both',
@@ -182,7 +185,7 @@ export default function AnalysisDrawer() {
             dangerouslySetInnerHTML={{ __html: renderReport(result.simple) }}
           />
         )}
-        {result && tab === 'findings' && <FindingsList />}
+        {result && tab === 'findings' && <FindingsList result={result} />}
       </div>
 
       {/* footer actions */}
@@ -204,8 +207,8 @@ export default function AnalysisDrawer() {
   );
 }
 
-function FindingsList() {
-  const findings = [
+function FindingsList({ result }) {
+  const findings = result?.findings || [
     { severity: 'ok', label: 'Lungs', value: 'Clear · no consolidation' },
     { severity: 'warn', label: 'Atelectasis', value: 'Mild bibasilar · technique-related' },
     { severity: 'ok', label: 'Pleural spaces', value: 'No effusion, no pneumothorax' },

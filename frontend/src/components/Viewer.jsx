@@ -20,6 +20,14 @@ export default function Viewer() {
   const file = selected();
   const result = file ? results[file.id] : null;
   const [zoom, setZoom] = useState(1);
+  const patientCopy = {
+    brain_mri:
+      'This is a derived axial brain MRI view. The colored area marks the tumor region used in the longitudinal demo so you can compare how it changes over time.',
+    chest_xray:
+      "This is a chest X-ray taken from the front. The bright areas are bone (ribs, spine), and the dark areas are air inside your lungs.",
+    general:
+      'This panel shows the uploaded scan with any optional AI attention overlay drawn on top of it.',
+  };
 
   if (!file) {
     return (
@@ -135,8 +143,7 @@ export default function Viewer() {
             >
               <div className="eyebrow mb-1" style={{ color: 'oklch(0.85 0.06 85)' }}>What you're looking at</div>
               <p className="text-xs leading-relaxed">
-                This is a chest X-ray taken from the front. The bright areas are bone (ribs, spine),
-                and the dark areas are air inside your lungs.
+                {patientCopy[file.sampleModality] || patientCopy.general}
               </p>
             </div>
           )}

@@ -19,6 +19,7 @@ export const useStore = create()(
       selectedFileId: null,
       priorFileId: null,
       comparisonMode: false,
+      comparisonTarget: 'prior',
       comparisonResult: null,
       comparing: false,
 
@@ -55,13 +56,14 @@ export const useStore = create()(
       // --- File actions ---
       addFiles: (raw) => {
         const add = raw.map((f) => ({
-          id: rnd(),
+          ...(f instanceof File ? {} : f),
+          id: f instanceof File ? rnd() : f.id || rnd(),
           name: f.name,
           size: f.size,
           type: f.type,
           preview: f.preview || (f instanceof File ? URL.createObjectURL(f) : null),
           file: f instanceof File ? f : null,
-          timestamp: Date.now(),
+          timestamp: f instanceof File ? Date.now() : f.timestamp || Date.now(),
           // optional mock modality/label for sample data
           placeholderLabel: f.placeholderLabel,
           sampleModality: f.sampleModality,
@@ -89,6 +91,7 @@ export const useStore = create()(
         }),
       selectFile: (id) => set({ selectedFileId: id }),
       setPriorFile: (id) => set({ priorFileId: id }),
+      setComparisonTarget: (slot) => set({ comparisonTarget: slot }),
 
       // --- Analysis config ---
       setModality: (m) => set({ modality: m }),
@@ -98,12 +101,11 @@ export const useStore = create()(
 
       // --- Comparison ---
       setComparisonMode: (on) =>
-        set({
+        set((s) => ({
           comparisonMode: on,
-          priorFileId: on ? null : null,
-          comparisonResult: on ? null : null,
-          activePane: on ? 'compare' : 'workspace',
-        }),
+          comparisonTarget: on ? s.comparisonTarget || 'prior' : s.comparisonTarget,
+          activePane: on ? 'compare' : s.activePane === 'compare' ? 'workspace' : s.activePane,
+        })),
       setComparisonResult: (r) => set({ comparisonResult: r }),
       setComparing: (v) => set({ comparing: v }),
 
@@ -148,10 +150,14 @@ export const useStore = create()(
           files: [],
           selectedFileId: null,
           priorFileId: null,
+          comparisonMode: false,
+          comparisonTarget: 'prior',
           results: {},
           comparisonResult: null,
+          comparing: false,
           error: null,
           patientContext: {},
+          activePane: 'workspace',
         });
       },
       clearHistory: () => set({ history: [] }),

@@ -14,11 +14,41 @@ import ComparisonView from './components/ComparisonView';
 import PDFPreview from './components/PDFPreview';
 import TweaksPanel from './components/TweaksPanel';
 import DisclaimerModal from './components/DisclaimerModal';
-import { SAMPLE_FILES } from './data/sample';
+import { getLongitudinalDemoSession } from './data/sample';
 
 function Sidebar() {
-  const { comparisonMode, setComparisonMode, generateHeatmap, setGenerateHeatmap, files, addFiles, clearSession } = useStore();
+  const {
+    comparisonMode,
+    setComparisonMode,
+    setComparisonTarget,
+    setComparisonResult,
+    generateHeatmap,
+    setGenerateHeatmap,
+    files,
+    addFiles,
+    clearSession,
+    selectFile,
+    setPriorFile,
+    setModality,
+    setPatientContext,
+  } = useStore();
   const hasFiles = files.length > 0;
+
+  const loadLongitudinalDemo = () => {
+    const demo = getLongitudinalDemoSession();
+    clearSession();
+    const added = addFiles(demo.files);
+    const prior = added.find((file) => file.demoRole === 'prior');
+    const current = added.find((file) => file.demoRole === 'current');
+    setModality(demo.modality);
+    setPatientContext(demo.patientContext);
+    if (current) selectFile(current.id);
+    if (prior) setPriorFile(prior.id);
+    setComparisonTarget('prior');
+    setComparisonResult(demo.comparisonResult);
+    setComparisonMode(true);
+  };
+
   return (
     <aside
       className="shrink-0 flex flex-col gap-3 p-3 overflow-y-auto"
@@ -26,15 +56,20 @@ function Sidebar() {
     >
       <Upload />
 
+      <button
+        className={`btn btn-sm ${hasFiles ? 'btn-ghost' : ''}`}
+        onClick={loadLongitudinalDemo}
+        style={hasFiles ? {} : { background: 'var(--sunken)' }}
+      >
+        <Icon name="spark" size={12} />
+        Load MRI progression demo
+      </button>
+
       {!hasFiles && (
-        <button
-          className="btn btn-sm"
-          onClick={() => addFiles(SAMPLE_FILES)}
-          style={{ background: 'var(--sunken)' }}
-        >
-          <Icon name="spark" size={12} />
-          Load demo series
-        </button>
+        <div className="surface p-3 text-[11px] leading-relaxed text-muted">
+          Uses a real rendered baseline and follow-up pair from GliODIL case 539 so compare mode
+          opens ready to show interval tumor growth.
+        </div>
       )}
 
       <ModalityPicker />

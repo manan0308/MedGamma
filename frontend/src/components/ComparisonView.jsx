@@ -17,9 +17,16 @@ The right lower lobe consolidation seen on the prior exam has *decreased* in ext
 2. No new acute cardiopulmonary process.
 3. Continue current therapy. Follow-up CXR in 4–6 weeks if clinically indicated.`;
 
-function Pane({ role, file }) {
+function Pane({ role, file, active, onActivate }) {
   return (
-    <div className="flex-1 surface overflow-hidden flex flex-col">
+    <button
+      type="button"
+      onClick={onActivate}
+      className="flex-1 surface overflow-hidden flex flex-col text-left"
+      style={{
+        boxShadow: active ? '0 0 0 2px var(--accent-soft)' : 'none',
+      }}
+    >
       <div className="hairline px-3 h-9 flex items-center gap-2 shrink-0">
         <span
           className="font-mono text-[10px] px-1.5 py-0.5 rounded"
@@ -33,6 +40,11 @@ function Pane({ role, file }) {
         <span className="font-mono text-[10px] text-muted truncate">
           {file ? `${modalityAbbr(file.sampleModality || 'general')} · ${file.name}` : 'select a series'}
         </span>
+        {active && (
+          <span className="ml-auto font-mono text-[10px]" style={{ color: 'var(--accent-ink)' }}>
+            picking from strip
+          </span>
+        )}
       </div>
       <div className="flex-1 film relative">
         {file ? (
@@ -47,11 +59,25 @@ function Pane({ role, file }) {
             </div>
           )
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <div className="eyebrow text-faint">pick a series from the strip</div>
+            <div className="w-full h-full flex items-center justify-center">
+            <div className="eyebrow text-faint">pick a series from the strip below</div>
           </div>
         )}
       </div>
+    </button>
+  );
+}
+
+function getPairDemoMeta(current, prior) {
+  if (!current?.demoPair || !prior?.demoPair) return null;
+  return current.demoPair.key === prior.demoPair.key ? current.demoPair : null;
+}
+
+function StatChip({ label, value }) {
+  return (
+    <div className="surface-sunken rounded-md px-2.5 py-2 min-w-[92px]">
+      <div className="eyebrow mb-1">{label}</div>
+      <div className="text-[13px] text-ink">{value}</div>
     </div>
   );
 }
@@ -60,6 +86,8 @@ export default function ComparisonView() {
   const {
     selected,
     prior,
+    comparisonTarget,
+    setComparisonTarget,
     setComparing,
     setComparisonResult,
     comparisonResult,
@@ -71,6 +99,7 @@ export default function ComparisonView() {
   } = useStore();
   const current = selected();
   const p = prior();
+  const demoPair = getPairDemoMeta(current, p);
 
   const run = async () => {
     if (!current || !p) return;
@@ -79,7 +108,7 @@ export default function ComparisonView() {
     try {
       if (!current.file || !p.file) {
         await new Promise((r) => setTimeout(r, 1600));
-        setComparisonResult({ comparison: SAMPLE_COMPARISON });
+        setComparisonResult({ comparison: demoPair?.comparison || SAMPLE_COMPARISON });
       } else {
         const r = await compareImages(current.file, p.file, {
           modality,
@@ -103,9 +132,25 @@ export default function ComparisonView() {
           <div className="eyebrow">Comparison</div>
           <div className="font-display text-xl">Current vs. prior</div>
         </div>
+        <div className="surface-sunken flex items-center p-0.5 rounded-md">
+          {['prior', 'current'].map((slot) => (
+            <button
+              key={slot}
+              onClick={() => setComparisonTarget(slot)}
+              className="px-2.5 h-7 text-xs rounded-sm capitalize"
+              style={{
+                background: comparisonTarget === slot ? 'var(--panel)' : 'transparent',
+                color: comparisonTarget === slot ? 'var(--ink)' : 'var(--muted)',
+                boxShadow: comparisonTarget === slot ? 'inset 0 0 0 1px var(--line)' : 'none',
+              }}
+            >
+              Pick {slot}
+            </button>
+          ))}
+        </div>
         <div className="grow-1" />
         <div className="text-[11px] font-mono text-faint">
-          Pick a current and prior from the series strip below. Comparison tracks interval change.
+          Pick which slot you are filling, then choose a series from the strip below.
         </div>
         <button
           className="btn btn-primary btn-sm"
@@ -117,10 +162,40 @@ export default function ComparisonView() {
         </button>
       </div>
 
+      {demoPair && (
+        <div className="grid gap-4 lg:grid-cols-[1fr_240px]">
+          <div className="flex flex-wrap gap-2">
+            <StatChip label="Case" value={`GliODIL ${demoPair.caseId}`} />
+            <StatChip label="Baseline" value={`${demoPair.priorVolumeMl.toFixed(2)} mL`} />
+            <StatChip label="Follow-up" value={`${demoPair.currentVolumeMl.toFixed(2)} mL`} />
+            <StatChip label="Delta" value={`+${demoPair.deltaVolumeMl.toFixed(2)} mL`} />
+            <StatChip label="Change" value={`${demoPair.ratio.toFixed(2)}x ${demoPair.trend}`} />
+          </div>
+          <div className="surface p-2">
+            <img
+              src={demoPair.overlayPreview}
+              alt={`Overlay preview for ${demoPair.title}`}
+              className="w-full aspect-[4/3] object-cover rounded"
+            />
+            <div className="text-[10px] font-mono text-faint mt-2">{demoPair.note}</div>
+          </div>
+        </div>
+      )}
+
       {/* panes */}
       <div className="flex-1 flex gap-4 min-h-0">
-        <Pane role="prior" file={p} />
-        <Pane role="current" file={current} />
+        <Pane
+          role="prior"
+          file={p}
+          active={comparisonTarget === 'prior'}
+          onActivate={() => setComparisonTarget('prior')}
+        />
+        <Pane
+          role="current"
+          file={current}
+          active={comparisonTarget === 'current'}
+          onActivate={() => setComparisonTarget('current')}
+        />
       </div>
 
       {/* result */}

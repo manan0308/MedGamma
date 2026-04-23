@@ -30,6 +30,8 @@ export default function GalleryStrip() {
     priorFileId,
     selectFile,
     setPriorFile,
+    setComparisonResult,
+    comparisonTarget,
     removeFile,
     comparisonMode,
     results,
@@ -49,9 +51,18 @@ export default function GalleryStrip() {
             key={f.id}
             onClick={() => {
               if (comparisonMode) {
-                if (f.id === selectedFileId) return;
-                if (f.id === priorFileId) setPriorFile(null);
-                else setPriorFile(f.id);
+                setComparisonResult(null);
+                if (comparisonTarget === 'current') {
+                  selectFile(f.id);
+                  if (f.id === priorFileId) setPriorFile(selectedFileId && selectedFileId !== f.id ? selectedFileId : null);
+                } else if (f.id === selectedFileId) {
+                  if (priorFileId) {
+                    selectFile(priorFileId);
+                    setPriorFile(f.id);
+                  }
+                } else {
+                  setPriorFile(f.id);
+                }
               } else {
                 selectFile(f.id);
               }
